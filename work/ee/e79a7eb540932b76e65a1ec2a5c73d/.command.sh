@@ -1,2 +1,0 @@
-#!/bin/bash -ue
-echo [ENSG00000134375, ENSG00000131473]*

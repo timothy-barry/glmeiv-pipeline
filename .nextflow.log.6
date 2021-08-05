@@ -1,0 +1,37 @@
+Aug-05 14:51:51.515 [main] DEBUG nextflow.cli.Launcher - $> nextflow main.nf
+Aug-05 14:51:51.652 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.10.0
+Aug-05 14:51:51.662 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [mad_snyder] - revision: d3891904e0
+Aug-05 14:51:51.682 [main] DEBUG nextflow.config.ConfigBuilder - Found config home: /Users/timbarry/.nextflow/config
+Aug-05 14:51:51.684 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/timbarry/.nextflow/config
+Aug-05 14:51:51.705 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Aug-05 14:51:52.407 [main] DEBUG nextflow.Session - Session uuid: 6f8ef5c0-9c62-4fd4-ab32-acc656cdac10
+Aug-05 14:51:52.408 [main] DEBUG nextflow.Session - Run name: mad_snyder
+Aug-05 14:51:52.408 [main] DEBUG nextflow.Session - Executor pool size: 8
+Aug-05 14:51:52.423 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.10.0 build 5430
+  Created: 01-11-2020 15:14 UTC (10:14 EDT)
+  System: Mac OS X 10.16
+  Runtime: Groovy 3.0.5 on OpenJDK 64-Bit Server VM 1.8.0_242-b08
+  Encoding: UTF-8 (UTF-8)
+  Process: 70597@tims-mbp-2021.wifi.local.cmu.edu [172.26.17.182]
+  CPUs: 8 - Mem: 16 GB (3.2 GB) - Swap: 2 GB (1.1 GB)
+Aug-05 14:51:52.435 [main] DEBUG nextflow.Session - Work-dir: /Users/timbarry/research_code/glmeiv-pipeline/work [Mac OS X]
+Aug-05 14:51:52.495 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Aug-05 14:51:52.497 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Aug-05 14:51:52.619 [main] DEBUG nextflow.Session - Session start invoked
+Aug-05 14:51:52.851 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Aug-05 14:51:52.858 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: obtain_gene_id
+Aug-05 14:51:52.894 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-05 14:51:52.894 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-05 14:51:52.897 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Aug-05 14:51:52.901 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=16 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Aug-05 14:51:53.028 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Aug-05 14:51:53.028 [main] DEBUG nextflow.Session - Session await
+Aug-05 14:51:53.100 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 14:51:53.104 [Task submitter] INFO  nextflow.Session - [4c/06e10f] Submitted process > obtain_gene_id
+Aug-05 14:51:53.320 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: obtain_gene_id; status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/4c/06e10f907b9d5a9bc2b530db36d962]
+Aug-05 14:51:53.325 [main] DEBUG nextflow.Session - Session await > all process finished
+Aug-05 14:51:53.326 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Aug-05 14:51:53.336 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=1; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=205ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=1; peakCpus=1; peakMemory=0; ]
+Aug-05 14:51:53.491 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Aug-05 14:51:53.514 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

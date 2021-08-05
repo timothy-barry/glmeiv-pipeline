@@ -1,0 +1,47 @@
+Aug-05 15:26:29.532 [main] DEBUG nextflow.cli.Launcher - $> nextflow main.nf
+Aug-05 15:26:29.672 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.10.0
+Aug-05 15:26:29.681 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [nasty_archimedes] - revision: d3f0eea543
+Aug-05 15:26:29.703 [main] DEBUG nextflow.config.ConfigBuilder - Found config home: /Users/timbarry/.nextflow/config
+Aug-05 15:26:29.704 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/timbarry/.nextflow/config
+Aug-05 15:26:29.724 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Aug-05 15:26:30.429 [main] DEBUG nextflow.Session - Session uuid: ac2ec6b6-c680-4d84-b34b-05775abcf948
+Aug-05 15:26:30.429 [main] DEBUG nextflow.Session - Run name: nasty_archimedes
+Aug-05 15:26:30.430 [main] DEBUG nextflow.Session - Executor pool size: 8
+Aug-05 15:26:30.445 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.10.0 build 5430
+  Created: 01-11-2020 15:14 UTC (10:14 EDT)
+  System: Mac OS X 10.16
+  Runtime: Groovy 3.0.5 on OpenJDK 64-Bit Server VM 1.8.0_242-b08
+  Encoding: UTF-8 (UTF-8)
+  Process: 71924@tims-mbp-2021.wifi.local.cmu.edu [172.26.17.182]
+  CPUs: 8 - Mem: 16 GB (2.9 GB) - Swap: 2 GB (1.1 GB)
+Aug-05 15:26:30.457 [main] DEBUG nextflow.Session - Work-dir: /Users/timbarry/research_code/glmeiv-pipeline/work [Mac OS X]
+Aug-05 15:26:30.513 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Aug-05 15:26:30.515 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Aug-05 15:26:30.632 [main] DEBUG nextflow.Session - Session start invoked
+Aug-05 15:26:30.858 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Aug-05 15:26:30.866 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: obtain_gene_id
+Aug-05 15:26:30.906 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-05 15:26:30.906 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-05 15:26:30.910 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Aug-05 15:26:30.914 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=16 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Aug-05 15:26:31.052 [main] DEBUG nextflow.Session - Session aborted -- Cause: No such property: gene_id_ch for class: groovyx.gpars.dataflow.DataflowQueue
+Aug-05 15:26:31.078 [main] DEBUG nextflow.Session - The following nodes are still active:
+[process] obtain_gene_id
+  status=ACTIVE
+  port 0: (cntrl) -     ; channel: $
+
+Aug-05 15:26:31.084 [main] ERROR nextflow.cli.Launcher - @unknown
+groovy.lang.MissingPropertyException: No such property: gene_id_ch for class: groovyx.gpars.dataflow.DataflowQueue
+	at org.codehaus.groovy.runtime.ScriptBytecodeAdapter.unwrap(ScriptBytecodeAdapter.java:65)
+	at org.codehaus.groovy.runtime.callsite.PojoMetaClassGetPropertySite.getProperty(PojoMetaClassGetPropertySite.java:38)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callGetProperty(AbstractCallSite.java:329)
+	at Script_d911a4de.runScript(Script_d911a4de:26)
+	at nextflow.script.BaseScript.runDsl1(BaseScript.groovy:164)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:200)
+	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:219)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:219)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:127)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:277)
+	at nextflow.cli.Launcher.run(Launcher.groovy:466)
+	at nextflow.cli.Launcher.main(Launcher.groovy:648)

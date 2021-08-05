@@ -1,0 +1,69 @@
+Aug-05 15:17:41.703 [main] DEBUG nextflow.cli.Launcher - $> nextflow main.nf
+Aug-05 15:17:41.843 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.10.0
+Aug-05 15:17:41.853 [main] INFO  nextflow.cli.CmdRun - Launching `main.nf` [stoic_goldberg] - revision: 4574672890
+Aug-05 15:17:41.874 [main] DEBUG nextflow.config.ConfigBuilder - Found config home: /Users/timbarry/.nextflow/config
+Aug-05 15:17:41.875 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /Users/timbarry/.nextflow/config
+Aug-05 15:17:41.897 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `standard`
+Aug-05 15:17:42.587 [main] DEBUG nextflow.Session - Session uuid: 83c1e68e-6ff8-4a0f-8945-14ed13074a4c
+Aug-05 15:17:42.587 [main] DEBUG nextflow.Session - Run name: stoic_goldberg
+Aug-05 15:17:42.587 [main] DEBUG nextflow.Session - Executor pool size: 8
+Aug-05 15:17:42.602 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.10.0 build 5430
+  Created: 01-11-2020 15:14 UTC (10:14 EDT)
+  System: Mac OS X 10.16
+  Runtime: Groovy 3.0.5 on OpenJDK 64-Bit Server VM 1.8.0_242-b08
+  Encoding: UTF-8 (UTF-8)
+  Process: 71236@tims-mbp-2021.wifi.local.cmu.edu [172.26.17.182]
+  CPUs: 8 - Mem: 16 GB (3 GB) - Swap: 2 GB (1.1 GB)
+Aug-05 15:17:42.615 [main] DEBUG nextflow.Session - Work-dir: /Users/timbarry/research_code/glmeiv-pipeline/work [Mac OS X]
+Aug-05 15:17:42.672 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Aug-05 15:17:42.673 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Aug-05 15:17:42.791 [main] DEBUG nextflow.Session - Session start invoked
+Aug-05 15:17:43.040 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Aug-05 15:17:43.048 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: obtain_gene_id, run_gene_precomp
+Aug-05 15:17:43.087 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-05 15:17:43.087 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-05 15:17:43.091 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Aug-05 15:17:43.096 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=8; memory=16 GB; capacity=8; pollInterval=100ms; dumpInterval=5m
+Aug-05 15:17:43.375 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Aug-05 15:17:43.375 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Aug-05 15:17:43.385 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Aug-05 15:17:43.385 [main] DEBUG nextflow.Session - Session await
+Aug-05 15:17:43.481 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.487 [Task submitter] INFO  nextflow.Session - [97/003bd8] Submitted process > obtain_gene_id
+Aug-05 15:17:43.733 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: obtain_gene_id; status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/97/003bd88e47100abf54ca1bb7f665d5]
+Aug-05 15:17:43.768 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.768 [Task submitter] INFO  nextflow.Session - [f8/1494e6] Submitted process > run_gene_precomp (8)
+Aug-05 15:17:43.785 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.785 [Task submitter] INFO  nextflow.Session - [66/b767d4] Submitted process > run_gene_precomp (7)
+Aug-05 15:17:43.791 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.791 [Task submitter] INFO  nextflow.Session - [66/687d28] Submitted process > run_gene_precomp (2)
+Aug-05 15:17:43.797 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.797 [Task submitter] INFO  nextflow.Session - [8c/e39889] Submitted process > run_gene_precomp (9)
+Aug-05 15:17:43.803 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.805 [Task submitter] INFO  nextflow.Session - [a7/d61e99] Submitted process > run_gene_precomp (5)
+Aug-05 15:17:43.810 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.812 [Task submitter] INFO  nextflow.Session - [ba/075773] Submitted process > run_gene_precomp (6)
+Aug-05 15:17:43.816 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.819 [Task submitter] INFO  nextflow.Session - [a6/f0ef39] Submitted process > run_gene_precomp (1)
+Aug-05 15:17:43.824 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:43.827 [Task submitter] INFO  nextflow.Session - [4f/7e98cd] Submitted process > run_gene_precomp (4)
+Aug-05 15:17:45.945 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 7; name: run_gene_precomp (6); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/ba/07577357ba138e0da58e238d43856f]
+Aug-05 15:17:45.948 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:45.948 [Task submitter] INFO  nextflow.Session - [3c/ed98d1] Submitted process > run_gene_precomp (3)
+Aug-05 15:17:45.991 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 9; name: run_gene_precomp (8); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/f8/1494e62d64b9b160517bfd8e879435]
+Aug-05 15:17:45.995 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Aug-05 15:17:45.996 [Task submitter] INFO  nextflow.Session - [b6/082a1a] Submitted process > run_gene_precomp (10)
+Aug-05 15:17:46.004 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 2; name: run_gene_precomp (1); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/a6/f0ef3986feef309b3b1d174b8d13b0]
+Aug-05 15:17:46.027 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 3; name: run_gene_precomp (2); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/66/687d280e466dceb4e0eb8e25486b9d]
+Aug-05 15:17:46.039 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 6; name: run_gene_precomp (5); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/a7/d61e99605a67d01a7c806acca5720a]
+Aug-05 15:17:46.143 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 8; name: run_gene_precomp (7); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/66/b767d4faad0a40b3b87aa0ab3824b2]
+Aug-05 15:17:46.177 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 5; name: run_gene_precomp (4); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/4f/7e98cdeaf5b67b548fa073b3c6408d]
+Aug-05 15:17:46.279 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 10; name: run_gene_precomp (9); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/8c/e398893c4fda671f6d2a7d183a7198]
+Aug-05 15:17:47.180 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 4; name: run_gene_precomp (3); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/3c/ed98d128dc9f58963540a9783e6719]
+Aug-05 15:17:47.264 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 11; name: run_gene_precomp (10); status: COMPLETED; exit: 0; error: -; workDir: /Users/timbarry/research_code/glmeiv-pipeline/work/b6/082a1aacaa53461dda9198ca5b7b4b]
+Aug-05 15:17:47.265 [main] DEBUG nextflow.Session - Session await > all process finished
+Aug-05 15:17:47.266 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Aug-05 15:17:47.272 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=11; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=20.6s; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=8; peakCpus=8; peakMemory=0; ]
+Aug-05 15:17:47.352 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Aug-05 15:17:47.371 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

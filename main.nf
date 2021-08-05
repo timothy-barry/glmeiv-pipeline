@@ -23,21 +23,20 @@ process obtain_gene_id {
 }
 
 // Transform gene_id_ch_raw into usable form.
-gene_id_ch = gene_id_ch_raw.splitText().map{it.trim()}.gene_id_ch.collate(3).map{my_collate(it)}
-gene_id_ch.view()
+gene_id_ch = gene_id_ch_raw.splitText().map{it.trim()}.collate(3).map{my_collate(it)}
 
-/*
 process run_gene_precomp {
   echo true
 
   output:
-  tuple val(gene_id), file('precomp.rds') into gene_precomp_ch
+  file '*.rds' into gene_precomp_ch
 
   input:
   val gene_id from gene_id_ch
 
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gene_expressions_fp precomp.rds $gene_id
+  Rscript $projectDir/bin/run_precomp.R $params.gene_expressions_fp $gene_id
   """
 }
-*/
+
+gene_precomp_ch.flatten().map{file -> tuple(file.baseName, file)}.view()

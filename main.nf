@@ -4,16 +4,6 @@ params.pairs_fp="/Users/timbarry/research_offsite/glmeiv/public/data_analysis/pa
 params.gene_precomp_pod_size = 3
 params.gRNA_precomp_pod_size = 3
 
-// Define functions to be used throughout.
-def my_collate(l) {
-    out = ""
-    for (gene_id in l) {
-      out = out + gene_id + " "
-    }
-    return out
-}
-
-
 /*********************
 * gene precomputations
 *********************/
@@ -24,13 +14,14 @@ process obtain_gene_id {
 
   """
   Rscript -e 'pairs <- readRDS("$params.pairs_fp");
-  names <- unique(as.character(pairs[["gene_id"]]));
-  cat(paste0(names, collapse = "\n"))'
+  gene_names <- unique(as.character(pairs[["gene_id"]]));
+  cat(paste0(gene_names, collapse = "\n"))'
   """
 }
 
 // Transform gene_id_ch_raw into usable form.
-gene_id_ch = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.gene_precomp_pod_size).map{my_collate(it)}
+gene_id_ch = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.gene_precomp_pod_size).map{it.join(' ')}
+
 
 // Run the gene precomputations.
 process run_gene_precomp {
@@ -50,7 +41,6 @@ process run_gene_precomp {
 // Create a map of (gene-id, file-path) pairs.
 gene_precomp_ch = gene_precomp_ch_raw.flatten().map{file -> tuple(file.baseName, file)}
 
-
 /*********************
 * gRNA precomputations
 *********************/
@@ -61,13 +51,13 @@ process obtain_gRNA_id {
 
   """
   Rscript -e 'pairs <- readRDS("$params.pairs_fp");
-  names <- unique(as.character(pairs[["gRNA_id"]]));
-  cat(paste0(names, collapse = "\n"))'
+  gRNA_names <- unique(as.character(pairs[["gRNA_id"]]));
+  cat(paste0(gRNA_names, collapse = "\n"))'
   """
 }
 
 // Transform gRNA_id_ch_raw into usable form.
-gRNA_id_ch = gRNA_id_ch_raw.splitText().map{it.trim()}.collate(params.gRNA_precomp_pod_size).map{my_collate(it)}
+gRNA_id_ch = gRNA_id_ch_raw.splitText().map{it.trim()}.collate(params.gRNA_precomp_pod_size).map{it.join(' ')}
 
 // Run the gRNA precomputations.
 process run_gRNA_precomp {
@@ -86,7 +76,6 @@ process run_gRNA_precomp {
 
 // Create a map of (gRNA-id, file-path) pairs.
 gRNA_precomp_ch = gRNA_precomp_ch_raw.flatten().map{file -> tuple(file.baseName, file)}
-
 
 /************************
 * gene-gRNA pair analyses

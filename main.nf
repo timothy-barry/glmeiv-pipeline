@@ -1,9 +1,10 @@
 params.gene_expressions_fp = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gene_expressions"
 params.gRNA_counts_fp = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gRNA_counts"
 params.pairs_fp="/Users/timbarry/research_offsite/glmeiv/public/data_analysis/pairs_sample.rds"
-params.gene_precomp_pod_size = 3
-params.gRNA_precomp_pod_size = 3
-params.pair_pod_size = 4
+params.result_dir="/Users/timbarry/research_code/glmeiv-pipeline"
+params.gene_precomp_pod_size = 3 // 200
+params.gRNA_precomp_pod_size = 3 // 200
+params.pair_pod_size = 3 // 500
 
 
 /*********************
@@ -99,25 +100,41 @@ all_pairs_ch = all_par_ch_raw.splitText().map{it.trim()}.map{it.split(" ")}
 all_pair_genes_labelled_ch = gene_precomp_ch.cross(all_pairs_ch).map{[it[1][1], it[1][0], it[0][1]]}
 all_pairs_labelled_ch = gRNA_precomp_ch.cross(all_pair_genes_labelled_ch).map{[it[1][1], it[1][0], it[1][2], it[0][1]]}
 
-all_pairs_labelled_ch.view()
-
 // Buffer the all_pairs_labelled array
-// all_pairs_labelled_buffered = all_pairs_labelled_ch.collate(params.pair_pod_size)
+all_pairs_labelled_buffered = all_pairs_labelled_ch.collate(params.pair_pod_size).map{it.flatten()}.map{it.join(' ')}
 
-/*
 // Run the gene-gRNA analysis
 process run_gene_gRNA_analysis {
   echo true
 
+  output:
+  file 'raw_result.rds' into raw_results_ch
+
   input:
-  tuple val(gene_id), val(gRNA_id), val(gene_precomp_file), val(gRNA_precomp_file) from all_pairs_labelled_ch
+  val input from all_pairs_labelled_buffered
 
   """
-  echo $gene_id $gene_precomp_file $gRNA_id $gRNA_precomp_file
+  Rscript $projectDir/bin/run_analysis.R $params.gene_expressions_fp $params.gRNA_counts_fp $input
   """
 }
-*/
+
 
 /****************
 * collect results
 *****************/
+process collect_results {
+  time { 10.m * task.attempt * task.attempt }
+  errorStrategy 'retry'
+  maxRetries 3
+  publishDir params.result_dir, mode: "copy"
+
+  output:
+  file 'result.rds' into collected_results_ch
+
+  input:
+  file 'raw_result' from raw_results_ch.collect()
+
+  """
+  Rscript $projectDir/bin/collect_results.R raw_result*
+  """
+}

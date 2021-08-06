@@ -27,7 +27,7 @@ gene_id_ch_precomp = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.ge
 
 // Run the gene precomputations.
 process run_gene_precomp {
-  echo true
+  time "60s"
 
   output:
   file '*.rds' into gene_precomp_ch_raw
@@ -49,6 +49,8 @@ gene_precomp_ch = gene_precomp_ch_raw.flatten().map{file -> tuple(file.baseName,
 *********************/
 // Obtain the gRNA IDs.
 process obtain_gRNA_id {
+  time "60s"
+
   output:
   stdout gRNA_id_ch_raw
 
@@ -64,7 +66,7 @@ gRNA_id_ch_precomp = gRNA_id_ch_raw.splitText().map{it.trim()}.collate(params.gR
 
 // Run the gRNA precomputations.
 process run_gRNA_precomp {
-  echo true
+  time "60s"
 
   output:
   file '*.rds' into gRNA_precomp_ch_raw
@@ -85,6 +87,8 @@ gRNA_precomp_ch = gRNA_precomp_ch_raw.flatten().map{file -> tuple(file.baseName,
 * gene-gRNA pair analyses
 ************************/
 process obtain_pair_id {
+  time "60s"
+
   output:
   stdout all_par_ch_raw
 
@@ -105,7 +109,7 @@ all_pairs_labelled_buffered = all_pairs_labelled_ch.collate(params.pair_pod_size
 
 // Run the gene-gRNA analysis
 process run_gene_gRNA_analysis {
-  echo true
+  time "60s"
 
   output:
   file 'raw_result.rds' into raw_results_ch
@@ -123,7 +127,7 @@ process run_gene_gRNA_analysis {
 * collect results
 *****************/
 process collect_results {
-  time { 10.m * task.attempt * task.attempt }
+  time { 1.m * task.attempt * task.attempt }
   errorStrategy 'retry'
   maxRetries 3
   publishDir params.result_dir, mode: "copy"

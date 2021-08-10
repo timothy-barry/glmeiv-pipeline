@@ -2,13 +2,16 @@ library(magrittr)
 library(ondisc)
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)
+
 gene_expressions_fp <- args[1]
-gRNA_counts_fp <- args[2]
-other_args <- args[seq(3L, n_args)]
+gene_expressions_meta <- args[2]
+gRNA_counts_fp <- args[3]
+gRNA_counts_meta <- args[4]
+other_args <- args[seq(5L, n_args)]
 
 # load the gene expression and gRNA count data
-gene_expressions <- read_odm(odm_fp = gene_expressions_fp)
-gRNA_counts <- read_odm(odm_fp = gRNA_counts_fp)
+gene_expressions <- read_odm(gene_expressions_fp, gene_expressions_meta)
+gRNA_counts <- read_odm(gRNA_counts_fp, gRNA_counts_meta)
 
 # obtain the gene IDs, gRNA IDs, gene precomp file paths, and gRNA precomp file paths.
 gene_ids <- other_args[seq(from = 1L, by = 4, to = length(other_args))]

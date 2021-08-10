@@ -1,11 +1,17 @@
-params.gene_expressions_fp = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gene_expressions"
-params.gRNA_counts_fp = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gRNA_counts"
-params.pairs_fp="/Users/timbarry/research_offsite/glmeiv/public/data_analysis/pairs_sample.rds"
-params.result_dir="/Users/timbarry/research_code/glmeiv-pipeline"
-params.gene_precomp_pod_size = 3 // 200
-params.gRNA_precomp_pod_size = 3 // 200
-params.pair_pod_size = 3 // 500
-
+// gene expressions and metadata
+params.gene_expressions_fp = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gasp_scale_gene_expressions.odm"
+params.gene_expressions_meta = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gasp_scale_gene_metadata.rds"
+// gRNA counts and metadata
+params.gRNA_counts_fp = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gasp_scale_gRNA_counts.odm"
+params.gRNA_counts_meta = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gasp_scale_gRNA_metadata.rds"
+// gene-gRNA pairs
+params.pairs_fp="/Users/timbarry/research_offsite/glmeiv/public/data_analysis/gRNA_gene_pairs_sample.rds"
+// result dir
+params.result_dir="/Users/timbarry/research_offsite/glmeiv/private/data_analysis/results"
+// pod sizes
+params.gene_precomp_pod_size = 3
+params.gRNA_precomp_pod_size = 3
+params.pair_pod_size = 3
 
 /*********************
 * gene precomputations
@@ -25,6 +31,7 @@ process obtain_gene_id {
 // Transform gene_id_ch_raw into usable form.
 gene_id_ch_precomp = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.gene_precomp_pod_size).map{it.join(' ')}
 
+
 // Run the gene precomputations.
 process run_gene_precomp {
   time "60s"
@@ -36,17 +43,17 @@ process run_gene_precomp {
   val gene_id from gene_id_ch_precomp
 
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gene_expressions_fp $gene_id
+  Rscript $projectDir/bin/run_precomp.R $params.gene_expressions_fp $params.gene_expressions_meta $gene_id
   """
 }
 
 // Create a map of (gene-id, file-path) pairs.
 gene_precomp_ch = gene_precomp_ch_raw.flatten().map{file -> tuple(file.baseName, file)}
 
-
 /*********************
 * gRNA precomputations
 *********************/
+
 // Obtain the gRNA IDs.
 process obtain_gRNA_id {
   time "60s"
@@ -75,13 +82,12 @@ process run_gRNA_precomp {
   val gRNA_id from gRNA_id_ch_precomp
 
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gRNA_counts_fp $gRNA_id
+  Rscript $projectDir/bin/run_precomp.R $params.gRNA_counts_fp $params.gRNA_counts_meta $gRNA_id
   """
 }
 
 // Create a map of (gRNA-id, file-path) pairs.
 gRNA_precomp_ch = gRNA_precomp_ch_raw.flatten().map{file -> tuple(file.baseName, file)}
-
 
 /************************
 * gene-gRNA pair analyses
@@ -118,7 +124,7 @@ process run_gene_gRNA_analysis {
   val input from all_pairs_labelled_buffered
 
   """
-  Rscript $projectDir/bin/run_analysis.R $params.gene_expressions_fp $params.gRNA_counts_fp $input
+  Rscript $projectDir/bin/run_analysis.R $params.gene_expressions_fp $params.gene_expressions_meta $params.gRNA_counts_fp $params.gRNA_counts_meta $input
   """
 }
 

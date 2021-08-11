@@ -13,6 +13,8 @@ params.gene_precomp_pod_size = 3
 params.gRNA_precomp_pod_size = 3
 params.pair_pod_size = 3
 
+println("$params.pairs_fp")
+
 /*********************
 * gene precomputations
 *********************/

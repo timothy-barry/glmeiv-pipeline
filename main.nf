@@ -1,19 +1,14 @@
-// gene expressions and metadata
-params.gene_expressions_fp = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gasp_scale_gene_expressions.odm"
-params.gene_expressions_meta = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gasp_scale_gene_metadata.rds"
-// gRNA counts and metadata
-params.gRNA_counts_fp = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gasp_scale_gRNA_counts.odm"
-params.gRNA_counts_meta = "/Users/timbarry/research_offsite/gasperini-2019/at-scale/processed/gasp_scale_gRNA_metadata.rds"
-// gene-gRNA pairs
-params.pairs_fp="/Users/timbarry/research_offsite/glmeiv/public/data_analysis/gRNA_gene_pairs_sample.rds"
-// result dir
-params.result_dir="/Users/timbarry/research_offsite/glmeiv/private/data_analysis/results"
-// pod sizes
-params.gene_precomp_pod_size = 3
+// All arguments:
+// 1. gene expressions and metadata: gene_odm, gene_metadata
+// 2. gRNA counts and metadata: gRNA_odm, gRNA_metadata
+// 3. gene-gRNA pairs: pairs
+// 4. covariate matrix and offsets: covariate_matrix, m_offsets, g_offsets
+// 5. family strings: m_fam_str, g_fam_str
+// 6. results dir: result_dir
+// 7. pod sizes
+// params.gene_pod_size = 3
 params.gRNA_precomp_pod_size = 3
 params.pair_pod_size = 3
-
-println("$params.pairs_fp")
 
 /*********************
 * gene precomputations
@@ -24,19 +19,18 @@ process obtain_gene_id {
   stdout gene_id_ch_raw
 
   """
-  Rscript -e 'pairs <- readRDS("$params.pairs_fp");
+  Rscript -e 'pairs <- readRDS("$params.pairs");
   gene_names <- unique(as.character(pairs[["gene_id"]]));
   cat(paste0(gene_names, collapse = "\n"))'
   """
 }
 
 // Transform gene_id_ch_raw into usable form.
-gene_id_ch_precomp = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.gene_precomp_pod_size).map{it.join(' ')}
-
+gene_id_ch_precomp = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.gene_pod_size).map{it.join(' ')}
 
 // Run the gene precomputations.
 process run_gene_precomp {
-  time "60s"
+  time { 1.m * params.gene_pod_size } // 1 minute/gene
 
   output:
   file '*.rds' into gene_precomp_ch_raw
@@ -44,8 +38,11 @@ process run_gene_precomp {
   input:
   val gene_id from gene_id_ch_precomp
 
+  // args: 1. gene backing odm file, 2. gene metadata RDS file,
+  // 3. covariate matrix, 4. m offsets fp,
+  // 5. family string, 6. gene id strings
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gene_expressions_fp $params.gene_expressions_meta $gene_id
+  Rscript $projectDir/bin/run_precomp.R $params.gene_odm $params.gene_metadata $params.covariate_matrix $params.m_offsets $params.m_fam_str $gene_id
   """
 }
 
@@ -55,6 +52,8 @@ gene_precomp_ch = gene_precomp_ch_raw.flatten().map{file -> tuple(file.baseName,
 /*********************
 * gRNA precomputations
 *********************/
+
+/*
 
 // Obtain the gRNA IDs.
 process obtain_gRNA_id {
@@ -94,6 +93,9 @@ gRNA_precomp_ch = gRNA_precomp_ch_raw.flatten().map{file -> tuple(file.baseName,
 /************************
 * gene-gRNA pair analyses
 ************************/
+
+/*
+
 process obtain_pair_id {
   time "60s"
 
@@ -126,7 +128,7 @@ process run_gene_gRNA_analysis {
   val input from all_pairs_labelled_buffered
 
   """
-  Rscript $projectDir/bin/run_analysis.R $params.gene_expressions_fp $params.gene_expressions_meta $params.gRNA_counts_fp $params.gRNA_counts_meta $input
+  Rscript $projectDir/bin/run_analysis.R $params.gene_odm_fp $params.gene_metadata_fp $params.gRNA_counts_fp $params.gRNA_counts_meta $input
   """
 }
 
@@ -134,6 +136,9 @@ process run_gene_gRNA_analysis {
 /****************
 * collect results
 *****************/
+
+/*
+
 process collect_results {
   time { 1.m * task.attempt * task.attempt }
   errorStrategy 'retry'
@@ -150,3 +155,5 @@ process collect_results {
   Rscript $projectDir/bin/collect_results.R raw_result*
   """
 }
+
+*/

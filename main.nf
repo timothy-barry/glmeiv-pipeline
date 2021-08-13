@@ -128,8 +128,8 @@ all_pairs_labelled_buffered = all_pairs_labelled_ch.collate(params.pair_pod_size
 
 // Run the gene-gRNA analysis
 process run_gene_gRNA_analysis {
-  echo true
-  time { 2.m * params.pair_pod_size }
+  errorStrategy "ignore"
+  time { 3.m * params.pair_pod_size }
 
   output:
   file 'raw_result.rds' into raw_results_ch

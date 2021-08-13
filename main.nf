@@ -7,14 +7,16 @@
 // 6. results dir: result_dir
 // 7. pod sizes
 // params.gene_pod_size = 3
-params.gRNA_precomp_pod_size = 3
-params.pair_pod_size = 3
+// params.gRNA_pod_size = 3
+// params.pair_pod_size = 3
 
 /*********************
 * gene precomputations
 *********************/
 // Obtain the gene IDs.
 process obtain_gene_id {
+  time "60s"
+
   output:
   stdout gene_id_ch_raw
 
@@ -30,7 +32,7 @@ gene_id_ch_precomp = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.ge
 
 // Run the gene precomputations.
 process run_gene_precomp {
-  time { 1.m * params.gene_pod_size } // 1 minute/gene
+  time { 2.m * params.gene_pod_size } // request 1 minute/gene of wall time
 
   output:
   file '*.rds' into gene_precomp_ch_raw
@@ -38,9 +40,12 @@ process run_gene_precomp {
   input:
   val gene_id from gene_id_ch_precomp
 
-  // args: 1. gene backing odm file, 2. gene metadata RDS file,
-  // 3. covariate matrix, 4. m offsets fp,
-  // 5. family string, 6. gene id strings
+  // args: 1. gene backing odm file
+  // 2. gene metadata RDS file
+  // 3. covariate matrix
+  // 4. m offsets fp
+  // 5. family string
+  // 6. gene id strings
   """
   Rscript $projectDir/bin/run_precomp.R $params.gene_odm $params.gene_metadata $params.covariate_matrix $params.m_offsets $params.m_fam_str $gene_id
   """
@@ -49,12 +54,10 @@ process run_gene_precomp {
 // Create a map of (gene-id, file-path) pairs.
 gene_precomp_ch = gene_precomp_ch_raw.flatten().map{file -> tuple(file.baseName, file)}
 
+
 /*********************
 * gRNA precomputations
 *********************/
-
-/*
-
 // Obtain the gRNA IDs.
 process obtain_gRNA_id {
   time "60s"
@@ -63,18 +66,18 @@ process obtain_gRNA_id {
   stdout gRNA_id_ch_raw
 
   """
-  Rscript -e 'pairs <- readRDS("$params.pairs_fp");
+  Rscript -e 'pairs <- readRDS("$params.pairs");
   gRNA_names <- unique(as.character(pairs[["gRNA_id"]]));
   cat(paste0(gRNA_names, collapse = "\n"))'
   """
 }
 
 // Transform gRNA_id_ch_raw into usable form.
-gRNA_id_ch_precomp = gRNA_id_ch_raw.splitText().map{it.trim()}.collate(params.gRNA_precomp_pod_size).map{it.join(' ')}
+gRNA_id_ch_precomp = gRNA_id_ch_raw.splitText().map{it.trim()}.collate(params.gRNA_pod_size).map{it.join(' ')}
 
 // Run the gRNA precomputations.
 process run_gRNA_precomp {
-  time "60s"
+  time { 1.m * params.gRNA_pod_size } // request 1 minute/gRNA of wall time
 
   output:
   file '*.rds' into gRNA_precomp_ch_raw
@@ -82,20 +85,25 @@ process run_gRNA_precomp {
   input:
   val gRNA_id from gRNA_id_ch_precomp
 
+  // args: 1. gRNA backing odm file
+  // 2. gRNA metadata RDS file
+  // 3. covariate matrix
+  // 4. m offsets fp
+  // 5. family string
+  // 6. gRNA id strings
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gRNA_counts_fp $params.gRNA_counts_meta $gRNA_id
+  Rscript $projectDir/bin/run_precomp.R $params.gRNA_odm $params.gRNA_metadata $params.covariate_matrix $params.m_offsets $params.g_fam_str $gRNA_id
   """
 }
 
 // Create a map of (gRNA-id, file-path) pairs.
 gRNA_precomp_ch = gRNA_precomp_ch_raw.flatten().map{file -> tuple(file.baseName, file)}
 
+
 /************************
 * gene-gRNA pair analyses
 ************************/
-
-/*
-
+// Obtain the pair IDs
 process obtain_pair_id {
   time "60s"
 
@@ -103,7 +111,7 @@ process obtain_pair_id {
   stdout all_par_ch_raw
 
   """
-  Rscript -e 'pairs <- readRDS("$params.pairs_fp");
+  Rscript -e 'pairs <- readRDS("$params.pairs");
   gene_names <- as.character(pairs[["gene_id"]]);
   gRNA_names <- as.character(pairs[["gRNA_id"]]);
   cat(paste(gene_names, gRNA_names, collapse = "\n"))'
@@ -119,7 +127,8 @@ all_pairs_labelled_buffered = all_pairs_labelled_ch.collate(params.pair_pod_size
 
 // Run the gene-gRNA analysis
 process run_gene_gRNA_analysis {
-  time "60s"
+  echo true
+  time { 2.m * params.pair_pod_size }
 
   output:
   file 'raw_result.rds' into raw_results_ch
@@ -127,11 +136,18 @@ process run_gene_gRNA_analysis {
   input:
   val input from all_pairs_labelled_buffered
 
+  //args: 1. covariate_matrix
+  // 2. gene_odm
+  // 3. gene_metadata
+  // 4. m_offsets
+  // 5. gRNA_odm
+  // 6. gRNA_metadata
+  // 7. g_offsets
+  // 8. input (gene_id, gRNA_id, gene_precomp, gRNA_precomp) tuples
   """
-  Rscript $projectDir/bin/run_analysis.R $params.gene_odm_fp $params.gene_metadata_fp $params.gRNA_counts_fp $params.gRNA_counts_meta $input
+  Rscript $projectDir/bin/run_analysis.R $params.covariate_matrix $params.gene_odm $params.gene_metadata $params.m_offsets $params.gRNA_odm $params.gRNA_metadata $params.g_offsets $input
   """
 }
-
 
 /****************
 * collect results

@@ -1,31 +1,67 @@
+##############################
+# 0. Set a few hyperparameters
+##############################
+n_em_rep <- 10
+pi_guess_range <- c(0.001, 0.03)
+m_perturbation_guess_range <- log(c(0.1, 1.5))
+g_perturbation_guess_range <- log(c(5,15))
+
+########################################
+# 1. Load packages and command-line args
+########################################
 library(magrittr)
 library(ondisc)
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)
+covariate_matrix_fp <- args[1L]
+gene_odm_fp <- args[2L]
+gene_metadata_fp <- args[3L]
+m_offsets_fp <- args[4L]
+gRNA_odm_fp <- args[5L]
+gRNA_metadata_fp <- args[6L]
+g_offsets_fp <- args[7L]
+other_args <- args[seq(8L, n_args)]
 
-gene_expressions_fp <- args[1]
-gene_expressions_meta <- args[2]
-gRNA_counts_fp <- args[3]
-gRNA_counts_meta <- args[4]
-other_args <- args[seq(5L, n_args)]
+#########################################
+# 2. Load ODMs, covariate matrix, offsets
+#########################################
+gene_odm <- read_odm(gene_odm_fp, gene_metadata_fp)
+gRNA_odm <- read_odm(gRNA_odm_fp, gRNA_metadata_fp)
+m_offset <- readRDS(m_offsets_fp)
+g_offset <- readRDS(g_offsets_fp)
+covariate_matrix <- readRDS(covariate_matrix_fp)
 
-# load the gene expression and gRNA count data
-gene_expressions <- read_odm(gene_expressions_fp, gene_expressions_meta)
-gRNA_counts <- read_odm(gRNA_counts_fp, gRNA_counts_meta)
-
-# obtain the gene IDs, gRNA IDs, gene precomp file paths, and gRNA precomp file paths.
+#############################################################
+# 3. Set vectors of gene IDs, gRNA IDs, and precomp locations
+#############################################################
 gene_ids <- other_args[seq(from = 1L, by = 4, to = length(other_args))]
 gRNA_ids <- other_args[seq(from = 2L, by = 4, to = length(other_args))]
 gene_precomp_fps <- other_args[seq(from = 3L, by = 4, to = length(other_args))]
 gRNA_precomp_fps <- other_args[seq(from = 4L, by = 4, to = length(other_args))]
 n_pairs <- length(gene_ids)
 
-# Loop over the pairs, loading the data and running the computation on each.
-out <- lapply(seq(1, n_pairs), function(i) {
-  gene_id <- gene_ids[i]; gRNA_id <- gRNA_ids[i]
-  gene_precomp <- readRDS(gene_precomp_fps[i]); gRNA_precomp <- readRDS(gRNA_precomp_fps[i])
-  m <- as.numeric(gene_expressions[[gene_id,]]); g <- as.numeric(gRNA_counts[[gRNA_id,]])
-  data.frame(gene_id = gene_id, gRNA_id = gRNA_id, sum_m = sum(m), sum_g = sum(g))
-}) %>% do.call(args = ., what = rbind)
+############################################################
+# 4. Loop through pairs, running method given precomputation
+############################################################
+out_l <- vector(mode = "list", length = n_pairs)
+for (i in seq(1L, n_pairs)) {
+  gene <- gene_ids[i]; gRNA <- gRNA_ids[i]
+  m <- as.numeric(gene_odm[[gene,]]); m_precomp <- readRDS(gene_precomp_fps[i])
+  g <- as.numeric(gRNA_odm[[gRNA,]]); g_precomp <- readRDS(gRNA_precomp_fps[i])
+  time <- system.time(fit <- glmeiv::run_glmeiv_given_precomputations(m = m, g = g,
+                                                                      m_precomp = m_precomp,
+                                                                      g_precomp = g_precomp,
+                                                                      covariate_matrix = covariate_matrix,
+                                                                      m_offset = m_offset,
+                                                                      g_offset = g_offset,
+                                                                      n_em_rep = n_em_rep,
+                                                                      pi_guess_range = pi_guess_range,
+                                                                      m_perturbation_guess_range = m_perturbation_guess_range,
+                                                                      g_perturbation_guess_range = g_perturbation_guess_range))[["elapsed"]]
+  s <- glmeiv::run_inference_on_em_fit(fit)
+  s_long <- glmeiv::wrangle_glmeiv_result(s, time, fit) %>% dplyr::mutate(gene_id = gene, gRNA_id = gRNA)
+  out_l[[i]] <- s_long
+}
 
-saveRDS(out, "raw_result.rds")
+out <- do.call(rbind, out_l) %>% dplyr::mutate_at(c("parameter", "target", "gene_id", "gRNA_id"), factor)
+saveRDS(object = out, file = "raw_result.rds")

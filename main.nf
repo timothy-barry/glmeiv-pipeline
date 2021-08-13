@@ -112,6 +112,7 @@ process obtain_pair_id {
 
   """
   Rscript -e 'pairs <- readRDS("$params.pairs");
+  pairs <- dplyr::arrange(pairs, gene_id);
   gene_names <- as.character(pairs[["gene_id"]]);
   gRNA_names <- as.character(pairs[["gRNA_id"]]);
   cat(paste(gene_names, gRNA_names, collapse = "\n"))'
@@ -149,14 +150,12 @@ process run_gene_gRNA_analysis {
   """
 }
 
+
 /****************
 * collect results
 *****************/
-
-/*
-
 process collect_results {
-  time { 1.m * task.attempt * task.attempt }
+  time { 10.m * task.attempt * task.attempt }
   errorStrategy 'retry'
   maxRetries 3
   publishDir params.result_dir, mode: "copy"
@@ -168,8 +167,6 @@ process collect_results {
   file 'raw_result' from raw_results_ch.collect()
 
   """
-  Rscript $projectDir/bin/collect_results.R raw_result*
+  Rscript $projectDir/bin/collect_results.R $params.pairs raw_result*
   """
 }
-
-*/

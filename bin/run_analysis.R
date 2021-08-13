@@ -45,10 +45,15 @@ n_pairs <- length(gene_ids)
 ############################################################
 out_l <- vector(mode = "list", length = n_pairs)
 for (i in seq(1L, n_pairs)) {
-  gene <- gene_ids[i]; gRNA <- gRNA_ids[i]
-  m <- as.numeric(gene_odm[[gene,]]); m_precomp <- readRDS(gene_precomp_fps[i])
-  g <- as.numeric(gRNA_odm[[gRNA,]]); g_precomp <- readRDS(gRNA_precomp_fps[i])
-  time <- system.time(fit <- glmeiv::run_glmeiv_given_precomputations(m = m, g = g,
+  gene <- gene_ids[i]
+  if (i == 1 || gene_ids[i] != gene_ids[i - 1]) { # only load gene data if necessary
+    m <- as.numeric(gene_odm[[gene,]]); m_precomp <- readRDS(gene_precomp_fps[i])
+  }
+  gRNA <- gRNA_ids[i]
+  if (i == 1 || gRNA_ids[i] != gRNA_ids[i - 1]) { # likewise for gRNAs
+    g <- as.numeric(gRNA_odm[[gRNA,]]); g_precomp <- readRDS(gRNA_precomp_fps[i]) 
+  }
+  time <- system.time({fit <- glmeiv::run_glmeiv_given_precomputations(m = m, g = g,
                                                                       m_precomp = m_precomp,
                                                                       g_precomp = g_precomp,
                                                                       covariate_matrix = covariate_matrix,
@@ -57,8 +62,8 @@ for (i in seq(1L, n_pairs)) {
                                                                       n_em_rep = n_em_rep,
                                                                       pi_guess_range = pi_guess_range,
                                                                       m_perturbation_guess_range = m_perturbation_guess_range,
-                                                                      g_perturbation_guess_range = g_perturbation_guess_range))[["elapsed"]]
-  s <- glmeiv::run_inference_on_em_fit(fit)
+                                                                      g_perturbation_guess_range = g_perturbation_guess_range)
+                      s <- glmeiv::run_inference_on_em_fit(fit)})[["elapsed"]]
   s_long <- glmeiv::wrangle_glmeiv_result(s, time, fit) %>% dplyr::mutate(gene_id = gene, gRNA_id = gRNA)
   out_l[[i]] <- s_long
 }

@@ -22,4 +22,4 @@ if (ncol(pairs_df) >= 3) {
   out <- combined_result
 }
 
-saveRDS(out, "result.rds")
+saveRDS(out, "result_glmeiv.rds")

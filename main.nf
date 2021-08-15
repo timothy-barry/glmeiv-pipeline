@@ -32,7 +32,7 @@ gene_id_ch_precomp = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.ge
 
 // Run the gene precomputations.
 process run_gene_precomp {
-  time { 2.m * params.gene_pod_size } // request 1 minute/gene of wall time
+  time { 20.s * params.gene_pod_size } // request 1 minute/gene of wall time
 
   output:
   file '*.rds' into gene_precomp_ch_raw
@@ -77,7 +77,7 @@ gRNA_id_ch_precomp = gRNA_id_ch_raw.splitText().map{it.trim()}.collate(params.gR
 
 // Run the gRNA precomputations.
 process run_gRNA_precomp {
-  time { 1.m * params.gRNA_pod_size } // request 1 minute/gRNA of wall time
+  time { 10.s * params.gRNA_pod_size } // request 1 minute/gRNA of wall time
 
   output:
   file '*.rds' into gRNA_precomp_ch_raw
@@ -128,8 +128,8 @@ all_pairs_labelled_buffered = all_pairs_labelled_ch.collate(params.pair_pod_size
 
 // Run the gene-gRNA analysis
 process run_gene_gRNA_analysis {
-  errorStrategy "ignore"
-  time { 3.m * params.pair_pod_size }
+  errorStrategy  { task.attempt <= 4  ? 'retry' : 'finish' }
+  time { 2.m * params.pair_pod_size }
 
   output:
   file 'raw_result.rds' into raw_results_ch
@@ -155,13 +155,13 @@ process run_gene_gRNA_analysis {
 * collect results
 *****************/
 process collect_results {
-  time { 10.m * task.attempt * task.attempt }
+  time { 5.m * task.attempt * task.attempt }
   errorStrategy 'retry'
-  maxRetries 3
+  maxRetries 4
   publishDir params.result_dir, mode: "copy"
 
   output:
-  file 'result.rds' into collected_results_ch
+  file 'result_glmeiv.rds' into collected_results_ch
 
   input:
   file 'raw_result' from raw_results_ch.collect()

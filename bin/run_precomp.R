@@ -9,7 +9,8 @@ metadata_fp <- args[2L]
 covariate_matrix_fp <- args[3L]
 m_offsets_fp <- args[4L]
 fam <- as.character(args[5L])
-ids <- args[seq(6L, n_args)]
+theta <- if (args[6L] == "NA") NA else as.integer(args[6L])
+ids <- args[seq(7L, n_args)]
 
 ####################################################
 # 2. Load ODM, covariate mat, and offset; set family
@@ -20,7 +21,7 @@ offset <- readRDS(m_offsets_fp)
 fam_obj <- if (fam == "poisson") {
   poisson()
 } else if (fam == "nb") {
-  MASS::negative.binomial(NA)
+  MASS::negative.binomial(theta)
 } else {
   stop("Family unrecognized. Use either 'poisson' or 'nb'.")
 }

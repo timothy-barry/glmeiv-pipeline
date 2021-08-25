@@ -9,6 +9,8 @@
 // params.gene_pod_size = 3
 // params.gRNA_pod_size = 3
 // params.pair_pod_size = 3
+params.m_theta = "NA"
+params.g_theta = "NA"
 
 /*********************
 * gene precomputations
@@ -47,7 +49,7 @@ process run_gene_precomp {
   // 5. family string
   // 6. gene id strings
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gene_odm $params.gene_metadata $params.covariate_matrix $params.m_offsets $params.m_fam_str $gene_id
+  Rscript $projectDir/bin/run_precomp.R $params.gene_odm $params.gene_metadata $params.covariate_matrix $params.m_offsets $params.m_fam_str $params.m_theta $gene_id
   """
 }
 
@@ -92,7 +94,7 @@ process run_gRNA_precomp {
   // 5. family string
   // 6. gRNA id strings
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gRNA_odm $params.gRNA_metadata $params.covariate_matrix $params.m_offsets $params.g_fam_str $gRNA_id
+  Rscript $projectDir/bin/run_precomp.R $params.gRNA_odm $params.gRNA_metadata $params.covariate_matrix $params.m_offsets $params.g_fam_str $params.g_theta $gRNA_id
   """
 }
 

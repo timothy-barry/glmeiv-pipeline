@@ -4,8 +4,9 @@
 library(magrittr)
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)
-pairs_fp <- args[1L]
-raw_result_fps <- args[seq(2L, n_args)]
+result_file_name <- args[1L]
+pairs_fp <- args[2L]
+raw_result_fps <- args[seq(3L, n_args)]
 # load data
 pairs_df <- readRDS(pairs_fp)
 combined_result <- do.call(rbind, lapply(raw_result_fps, function(fp) readRDS(fp)))
@@ -22,4 +23,4 @@ if (ncol(pairs_df) >= 3) {
   out <- combined_result
 }
 
-saveRDS(out, "result_glmeiv.rds")
+saveRDS(out, result_file_name)

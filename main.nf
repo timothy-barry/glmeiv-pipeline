@@ -11,6 +11,7 @@
 // params.pair_pod_size = 3
 params.m_theta = "NA"
 params.g_theta = "NA"
+params.result_file_name = "result_glmeiv.rds"
 
 /*********************
 * gene precomputations
@@ -79,7 +80,7 @@ gRNA_id_ch_precomp = gRNA_id_ch_raw.splitText().map{it.trim()}.collate(params.gR
 
 // Run the gRNA precomputations.
 process run_gRNA_precomp {
-  time { 10.s * params.gRNA_pod_size } // request 1 minute/gRNA of wall time
+  time { 20.s * params.gRNA_pod_size } // request 1 minute/gRNA of wall time
 
   output:
   file '*.rds' into gRNA_precomp_ch_raw
@@ -131,7 +132,7 @@ all_pairs_labelled_buffered = all_pairs_labelled_ch.collate(params.pair_pod_size
 // Run the gene-gRNA analysis
 process run_gene_gRNA_analysis {
   errorStrategy  { task.attempt <= 4  ? 'retry' : 'finish' }
-  time { 2.m * params.pair_pod_size * task.attempt }
+  time { 3.m * params.pair_pod_size * task.attempt }
 
   output:
   file 'raw_result.rds' into raw_results_ch
@@ -163,12 +164,12 @@ process collect_results {
   publishDir params.result_dir, mode: "copy"
 
   output:
-  file 'result_glmeiv.rds' into collected_results_ch
+  file "$params.result_file_name" into collected_results_ch
 
   input:
   file 'raw_result' from raw_results_ch.collect()
 
   """
-  Rscript $projectDir/bin/collect_results.R $params.pairs raw_result*
+  Rscript $projectDir/bin/collect_results.R $params.result_file_name $params.pairs raw_result*
   """
 }

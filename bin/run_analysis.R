@@ -1,7 +1,7 @@
 ##############################
 # 0. Set a few hyperparameters
 ##############################
-n_em_rep <- 10
+n_em_rep <- 15
 pi_guess_range <- c(0.001, 0.03)
 m_perturbation_guess_range <- log(c(0.1, 1.5))
 g_perturbation_guess_range <- log(c(5,15))
@@ -51,7 +51,7 @@ for (i in seq(1L, n_pairs)) {
   }
   gRNA <- gRNA_ids[i]
   if (i == 1 || gRNA_ids[i] != gRNA_ids[i - 1]) { # likewise for gRNAs
-    g <- as.numeric(gRNA_odm[[gRNA,]]); g_precomp <- readRDS(gRNA_precomp_fps[i]) 
+    g <- as.numeric(gRNA_odm[[gRNA,]]); g_precomp <- readRDS(gRNA_precomp_fps[i])
   }
   time <- system.time({fit <- glmeiv::run_glmeiv_given_precomputations(m = m, g = g,
                                                                       m_precomp = m_precomp,

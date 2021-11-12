@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 ########################################
 # 1. Load packages and command-line args
 ########################################
@@ -7,7 +9,7 @@ n_args <- length(args)
 odm_fp <- args[1L]
 metadata_fp <- args[2L]
 covariate_matrix_fp <- args[3L]
-m_offsets_fp <- args[4L]
+offsets_fp <- args[4L]
 fam <- as.character(args[5L])
 theta <- if (args[6L] == "NA") NA else as.integer(args[6L])
 ids <- args[seq(7L, n_args)]
@@ -17,7 +19,7 @@ ids <- args[seq(7L, n_args)]
 ####################################################
 odm <- read_odm(odm_fp = odm_fp, metadata_fp = metadata_fp)
 covariate_matrix <- readRDS(covariate_matrix_fp)
-offset <- readRDS(m_offsets_fp)
+offset <- readRDS(offsets_fp)
 fam_obj <- if (fam == "poisson") {
   poisson()
 } else if (fam == "nb") {

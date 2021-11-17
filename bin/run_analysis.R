@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 ##############################
 # 0. Set a few hyperparameters
 ##############################

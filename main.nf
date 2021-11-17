@@ -23,8 +23,11 @@ process obtain_gene_id {
   output:
   stdout gene_id_ch_raw
 
+  input:
+  path pairs_fp from params.pairs
+
   """
-  Rscript -e 'pairs <- readRDS("$params.pairs");
+  Rscript -e 'pairs <- readRDS("$pairs_fp");
   gene_names <- unique(as.character(pairs[["gene_id"]]));
   cat(paste0(gene_names, collapse = "\n"))'
   """
@@ -41,6 +44,10 @@ process run_gene_precomp {
   file '*.rds' into gene_precomp_ch_raw
 
   input:
+  path gene_odm_fp from params.gene_odm
+  path gene_metadata_fp from params.gene_metadata
+  path covariate_matrix_fp from params.covariate_matrix
+  path m_offsets_fp from params.m_offsets
   val gene_id from gene_id_ch_precomp
 
   // args: 1. gene backing odm file
@@ -50,7 +57,7 @@ process run_gene_precomp {
   // 5. family string
   // 6. gene id strings
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gene_odm $params.gene_metadata $params.covariate_matrix $params.m_offsets $params.m_fam_str $params.m_theta $gene_id
+  run_precomp.R $gene_odm_fp $gene_metadata_fp $covariate_matrix_fp $m_offsets_fp $params.m_fam_str $params.m_theta $gene_id
   """
 }
 
@@ -68,8 +75,11 @@ process obtain_gRNA_id {
   output:
   stdout gRNA_id_ch_raw
 
+  input:
+  path pairs_fp from params.pairs
+
   """
-  Rscript -e 'pairs <- readRDS("$params.pairs");
+  Rscript -e 'pairs <- readRDS("$pairs_fp");
   gRNA_names <- unique(as.character(pairs[["gRNA_id"]]));
   cat(paste0(gRNA_names, collapse = "\n"))'
   """
@@ -86,16 +96,20 @@ process run_gRNA_precomp {
   file '*.rds' into gRNA_precomp_ch_raw
 
   input:
+  path gRNA_odm_fp from params.gRNA_odm
+  path gRNA_metadata_fp from params.gRNA_metadata
+  path covariate_matrix_fp from params.covariate_matrix
+  path g_offsets_fp from params.g_offsets
   val gRNA_id from gRNA_id_ch_precomp
 
   // args: 1. gRNA backing odm file
   // 2. gRNA metadata RDS file
   // 3. covariate matrix
-  // 4. m offsets fp
+  // 4. g offsets fp
   // 5. family string
   // 6. gRNA id strings
   """
-  Rscript $projectDir/bin/run_precomp.R $params.gRNA_odm $params.gRNA_metadata $params.covariate_matrix $params.m_offsets $params.g_fam_str $params.g_theta $gRNA_id
+  run_precomp.R $gRNA_odm_fp $gRNA_metadata_fp $covariate_matrix_fp $g_offsets_fp $params.g_fam_str $params.g_theta $gRNA_id
   """
 }
 
@@ -113,8 +127,11 @@ process obtain_pair_id {
   output:
   stdout all_par_ch_raw
 
+  input:
+  path pairs_fp from params.pairs
+
   """
-  Rscript -e 'pairs <- readRDS("$params.pairs");
+  Rscript -e 'pairs <- readRDS("$pairs_fp");
   pairs <- dplyr::arrange(pairs, gene_id);
   gene_names <- as.character(pairs[["gene_id"]]);
   gRNA_names <- as.character(pairs[["gRNA_id"]]);
@@ -138,6 +155,13 @@ process run_gene_gRNA_analysis {
   file 'raw_result.rds' into raw_results_ch
 
   input:
+  path covariate_matrix_fp from params.covariate_matrix
+  path gene_odm_fp from params.gene_odm
+  path gene_metadata_fp from params.gene_metadata
+  path m_offsets_fp from params.m_offsets
+  path gRNA_odm_fp from params.gRNA_odm
+  path gRNA_metadata_fp from params.gRNA_metadata
+  path g_offsets_fp from params.g_offsets
   val input from all_pairs_labelled_buffered
 
   //args: 1. covariate_matrix
@@ -149,7 +173,7 @@ process run_gene_gRNA_analysis {
   // 7. g_offsets
   // 8. input (gene_id, gRNA_id, gene_precomp, gRNA_precomp) tuples
   """
-  Rscript $projectDir/bin/run_analysis.R $params.covariate_matrix $params.gene_odm $params.gene_metadata $params.m_offsets $params.gRNA_odm $params.gRNA_metadata $params.g_offsets $input
+  run_analysis.R $covariate_matrix_fp $gene_odm_fp $gene_metadata_fp $m_offsets_fp $gRNA_odm_fp $gRNA_metadata_fp $g_offsets_fp $input
   """
 }
 
@@ -167,9 +191,10 @@ process collect_results {
   file "$params.result_file_name" into collected_results_ch
 
   input:
+  path pairs_fp from params.pairs
   file 'raw_result' from raw_results_ch.collect()
 
   """
-  Rscript $projectDir/bin/collect_results.R $params.result_file_name $params.pairs raw_result*
+  collect_results.R $params.result_file_name $pairs_fp raw_result*
   """
 }

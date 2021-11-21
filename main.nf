@@ -6,9 +6,6 @@
 // 5. family strings: m_fam_str, g_fam_str
 // 6. results dir: result_dir
 // 7. pod sizes
-// params.gene_pod_size = 3
-// params.gRNA_pod_size = 3
-// params.pair_pod_size = 3
 params.m_theta = "NA"
 params.g_theta = "NA"
 params.result_file_name = "result_glmeiv.rds"
@@ -117,9 +114,9 @@ process run_gRNA_precomp {
 gRNA_precomp_ch = gRNA_precomp_ch_raw.flatten().map{file -> tuple(file.baseName, file)}
 
 
-/************************
-* gene-gRNA pair analyses
-************************/
+/*******************************
+* gene-gRNA pair analysis setup
+*******************************/
 // Obtain the pair IDs
 process obtain_pair_id {
   time "60s"
@@ -138,16 +135,35 @@ process obtain_pair_id {
   cat(paste(gene_names, gRNA_names, collapse = "\n"))'
   """
 }
-// Look up the precomputation files for all pairs.
+// Look up the precomputation files for all pairs; collate.
 all_pairs_ch = all_par_ch_raw.splitText().map{it.trim()}.map{it.split(" ")}
 all_pair_genes_labelled_ch = gene_precomp_ch.cross(all_pairs_ch).map{[it[1][1], it[1][0], it[0][1]]}
-all_pairs_labelled_ch = gRNA_precomp_ch.cross(all_pair_genes_labelled_ch).map{[it[1][1], it[1][0], it[1][2], it[0][1]]}
+all_pairs_labelled_ch = gRNA_precomp_ch.cross(all_pair_genes_labelled_ch).map{[it[1][1], it[1][0], it[1][2], it[0][1]]}.collate(params.pair_pod_size)
+// Order the elements of the above emission, keeping only the precomputation files
+def my_spread(elem_list, j) {
+  out = []
+  for (elem in elem_list) {
+    out.add(elem[j])
+  }
+  return out
+}
+def my_spread_str(elem_list, j) {
+  l_size = elem_list.size();
+  out = ""
+  for (i = 0; i < l_size; i ++) {
+    elem = elem_list[i]
+    out += (elem[j] + (i == l_size - 1 ? "" : " "))
+  }
+  return out
+}
+all_pairs_labelled_ordered = all_pairs_labelled_ch.map{[my_spread_str(it, 0), my_spread_str(it, 1), my_spread(it, 2), my_spread(it, 3)]}
 
-// Buffer the all_pairs_labelled array
-all_pairs_labelled_buffered = all_pairs_labelled_ch.collate(params.pair_pod_size).map{it.flatten()}.map{it.join(' ')}
 
-// Run the gene-gRNA analysis
+/************************
+* gene-gRNA pair analysis
+*************************/
 process run_gene_gRNA_analysis {
+  echo true
   errorStrategy  { task.attempt <= 4  ? 'retry' : 'finish' }
   time { 3.m * params.pair_pod_size * task.attempt }
 
@@ -162,7 +178,7 @@ process run_gene_gRNA_analysis {
   path gRNA_odm_fp from params.gRNA_odm
   path gRNA_metadata_fp from params.gRNA_metadata
   path g_offsets_fp from params.g_offsets
-  val input from all_pairs_labelled_buffered
+  tuple val(gene_id), val(gRNA_id), file('gene_fp'), file('gRNA_fp') from all_pairs_labelled_ordered
 
   //args: 1. covariate_matrix
   // 2. gene_odm
@@ -171,9 +187,9 @@ process run_gene_gRNA_analysis {
   // 5. gRNA_odm
   // 6. gRNA_metadata
   // 7. g_offsets
-  // 8. input (gene_id, gRNA_id, gene_precomp, gRNA_precomp) tuples
+  // 8. input (gene_precomp_1, ..., gene_precomp_n), (gRNA_precomp_1, ..., gRNA_precomp_n)
   """
-  run_analysis.R $covariate_matrix_fp $gene_odm_fp $gene_metadata_fp $m_offsets_fp $gRNA_odm_fp $gRNA_metadata_fp $g_offsets_fp $input
+  run_analysis.R $covariate_matrix_fp $gene_odm_fp $gene_metadata_fp $m_offsets_fp $gRNA_odm_fp $gRNA_metadata_fp $g_offsets_fp $gene_id $gRNA_id gene_fp* gRNA_fp*
   """
 }
 

@@ -37,5 +37,6 @@ for (id in ids) {
                                                covariate_matrix = covariate_matrix,
                                                offset = offset,
                                                fam = glmeiv::augment_family_object(fam_obj))
+  precomp$id <- id
   saveRDS(precomp, paste0(id, ".rds"))
 }

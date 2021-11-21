@@ -36,10 +36,14 @@ covariate_matrix <- readRDS(covariate_matrix_fp)
 #############################################################
 # 3. Set vectors of gene IDs, gRNA IDs, and precomp locations
 #############################################################
-gene_ids <- other_args[seq(from = 1L, by = 4, to = length(other_args))]
-gRNA_ids <- other_args[seq(from = 2L, by = 4, to = length(other_args))]
-gene_precomp_fps <- other_args[seq(from = 3L, by = 4, to = length(other_args))]
-gRNA_precomp_fps <- other_args[seq(from = 4L, by = 4, to = length(other_args))]
+l_other_args <- length(other_args)
+idx_list <- vector(mode = "list", length = 4)
+for (i in seq(1, 4)) idx_list[[i]] <- seq(from =  1 + l_other_args/4 * (i - 1), length.out = l_other_args/4)
+
+gene_ids <- other_args[idx_list[[1]]]
+gRNA_ids <- other_args[idx_list[[2]]]
+gene_precomp_fps <- other_args[idx_list[[3]]]
+gRNA_precomp_fps <- other_args[idx_list[[4]]]
 n_pairs <- length(gene_ids)
 
 ############################################################
@@ -66,7 +70,7 @@ for (i in seq(1L, n_pairs)) {
                                                                       m_perturbation_guess_range = m_perturbation_guess_range,
                                                                       g_perturbation_guess_range = g_perturbation_guess_range)
                       s <- glmeiv::run_inference_on_em_fit(fit)})[["elapsed"]]
-  s_long <- glmeiv::wrangle_glmeiv_result(s, time, fit) %>% dplyr::mutate(gene_id = gene, gRNA_id = gRNA)
+  s_long <- glmeiv::wrangle_glmeiv_result(s, time, fit, TRUE, 2, 1) %>% dplyr::mutate(gene_id = gene, gRNA_id = gRNA)
   out_l[[i]] <- s_long
 }
 

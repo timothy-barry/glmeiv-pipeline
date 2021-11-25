@@ -59,18 +59,29 @@ for (i in seq(1L, n_pairs)) {
   if (i == 1 || gRNA_ids[i] != gRNA_ids[i - 1]) { # likewise for gRNAs
     g <- as.numeric(gRNA_odm[[gRNA,]]); g_precomp <- readRDS(gRNA_precomp_fps[i])
   }
-  time <- system.time({fit <- glmeiv::run_glmeiv_given_precomputations(m = m, g = g,
-                                                                      m_precomp = m_precomp,
-                                                                      g_precomp = g_precomp,
-                                                                      covariate_matrix = covariate_matrix,
-                                                                      m_offset = m_offset,
-                                                                      g_offset = g_offset,
-                                                                      n_em_rep = n_em_rep,
-                                                                      pi_guess_range = pi_guess_range,
-                                                                      m_perturbation_guess_range = m_perturbation_guess_range,
-                                                                      g_perturbation_guess_range = g_perturbation_guess_range)
-                      s <- glmeiv::run_inference_on_em_fit(fit)})[["elapsed"]]
-  s_long <- glmeiv::wrangle_glmeiv_result(s, time, fit, TRUE, 2, 1) %>% dplyr::mutate(gene_id = gene, gRNA_id = gRNA)
+
+  fit <- glmeiv::run_glmeiv_given_precomputations(m = m, g = g,
+                                                  m_precomp = m_precomp,
+                                                  g_precomp = g_precomp,
+                                                  covariate_matrix = covariate_matrix,
+                                                  m_offset = m_offset,
+                                                  g_offset = g_offset,
+                                                  n_em_rep = n_em_rep,
+                                                  pi_guess_range = pi_guess_range,
+                                                  m_perturbation_guess_range = m_perturbation_guess_range,
+                                                  g_perturbation_guess_range = g_perturbation_guess_range)
+  if (coef(fit$fit_m)[["perturbation"]] > log(4)) {
+    # fix estimate
+    p_hat <- fit$posterior_perturbation_probs > 0.5
+    p_hat[g == 0] <- 0
+    s_long <- glmeiv::run_thresholding_method(phat = p_hat, m = m, m_fam = m_precomp$fam,
+                                              m_offset = m_offset, covariate_matrix = covariate_matrix, exponentiate_coefs = TRUE) %>%
+      dplyr::add_row(parameter = "meta", target = "corrected_est", value = 1)
+  } else {
+    s <- glmeiv::run_inference_on_em_fit(fit)
+    s_long <- glmeiv::wrangle_glmeiv_result(s, 0, fit, TRUE, 2, 1)
+  }
+  s_long <- s_long %>% dplyr::mutate(gene_id = gene, gRNA_id = gRNA)
   out_l[[i]] <- s_long
 }
 

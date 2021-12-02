@@ -165,7 +165,7 @@ all_pairs_labelled_ordered = all_pairs_labelled_ch.map{[my_spread_str(it, 0), my
 process run_gene_gRNA_analysis {
   echo true
   errorStrategy  { task.attempt <= 3  ? 'retry' : 'finish' }
-  time { 4.m * params.pair_pod_size * task.attempt }
+  time { 4.m * params.pair_pod_size }
 
   output:
   file 'raw_result.rds' into raw_results_ch

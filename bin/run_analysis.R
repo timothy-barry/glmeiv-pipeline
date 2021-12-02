@@ -70,17 +70,8 @@ for (i in seq(1L, n_pairs)) {
                                                   pi_guess_range = pi_guess_range,
                                                   m_perturbation_guess_range = m_perturbation_guess_range,
                                                   g_perturbation_guess_range = g_perturbation_guess_range)
-  if (coef(fit$fit_m)[["perturbation"]] > log(4)) {
-    # fix estimate
-    p_hat <- fit$posterior_perturbation_probs > 0.5
-    p_hat[g == 0] <- 0
-    s_long <- glmeiv::run_thresholding_method(phat = p_hat, m = m, m_fam = m_precomp$fam,
-                                              m_offset = m_offset, covariate_matrix = covariate_matrix, exponentiate_coefs = TRUE) %>%
-      dplyr::add_row(parameter = "meta", target = "corrected_est", value = 1)
-  } else {
-    s <- glmeiv::run_inference_on_em_fit(fit)
-    s_long <- glmeiv::wrangle_glmeiv_result(s, 0, fit, TRUE, 2, 1)
-  }
+  s <- glmeiv::run_inference_on_em_fit(fit)
+  s_long <- glmeiv::wrangle_glmeiv_result(s, 0, fit, TRUE, 2, 1)
   s_long <- s_long %>% dplyr::mutate(gene_id = gene, gRNA_id = gRNA)
   out_l[[i]] <- s_long
 }

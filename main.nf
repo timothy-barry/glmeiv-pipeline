@@ -35,6 +35,7 @@ gene_id_ch_precomp = gene_id_ch_raw.splitText().map{it.trim()}.collate(params.ge
 
 // Run the gene precomputations.
 process run_gene_precomp {
+  errorStrategy  { task.attempt <= 3  ? 'retry' : 'finish' }
   time { 20.s * params.gene_pod_size } // request 1 minute/gene of wall time
 
   output:
@@ -87,6 +88,7 @@ gRNA_id_ch_precomp = gRNA_id_ch_raw.splitText().map{it.trim()}.collate(params.gR
 
 // Run the gRNA precomputations.
 process run_gRNA_precomp {
+  errorStrategy  { task.attempt <= 3  ? 'retry' : 'finish' }
   time { 20.s * params.gRNA_pod_size } // request 1 minute/gRNA of wall time
 
   output:

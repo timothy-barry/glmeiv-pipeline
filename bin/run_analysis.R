@@ -6,7 +6,7 @@
 n_em_rep <- 15
 pi_guess_range <- c(0.001, 0.03)
 m_perturbation_guess_range <- log(c(0.1, 1.5))
-g_perturbation_guess_range <- log(c(3, 15))
+g_perturbation_guess_range <- log(c(3, 100))
 
 ########################################
 # 1. Load packages and command-line args

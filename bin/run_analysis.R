@@ -11,11 +11,7 @@ g_perturbation_guess_range <- log(c(3, 100))
 ########################################
 # 1. Load packages and command-line args
 ########################################
-if (!("devtools" %in% rownames(installed.packages()))) install.packages("devtools", repos = "https://cloud.r-project.org")
-if (!("ondisc" %in% rownames(installed.packages()))) devtools::install_github(repo = "timothy-barry/ondisc", upgrade = "never")
-if (!("glmeiv" %in% rownames(installed.packages()))) devtools::install_github(repo = "timothy-barry/glmeiv", upgrade = "never")
-
-library(ondisc)
+library("ondisc", lib.loc = .libPaths()[1])
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)
 covariate_matrix_fp <- args[1L]

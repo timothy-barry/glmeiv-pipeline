@@ -3,7 +3,6 @@
 #######################
 # 1. Set fps, load data
 #######################
-if (!("dplyr" %in% rownames(installed.packages()))) install.packages("dplyr", repos = "https://cloud.r-project.org")
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)
 result_file_name <- args[1L]

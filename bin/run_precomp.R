@@ -3,11 +3,7 @@
 ########################################
 # 1. Load packages and command-line args
 ########################################
-if ("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0" %in% .libPaths()) {
-  library("ondisc", lib.loc = "/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0")
-} else {
-  library(ondisc)
-}
+library("ondisc", lib.loc = "/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0")
 
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)

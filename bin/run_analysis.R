@@ -11,7 +11,9 @@ g_perturbation_guess_range <- log(c(3, 100))
 ########################################
 # 1. Load packages and command-line args
 ########################################
+print(.libPaths()[1])
 library("ondisc", lib.loc = .libPaths()[1])
+
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)
 covariate_matrix_fp <- args[1L]

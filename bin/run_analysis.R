@@ -11,7 +11,10 @@ g_perturbation_guess_range <- log(c(3, 100))
 ########################################
 # 1. Load packages and command-line args
 ########################################
-library(magrittr)
+if (!("devtools" %in% rownames(installed.packages()))) install.packages("devtools", repos = "https://cloud.r-project.org")
+if (!("ondisc" %in% rownames(installed.packages()))) devtools::install_github(repo = "timothy-barry/ondisc", upgrade = "never")
+if (!("glmeiv" %in% rownames(installed.packages()))) devtools::install_github(repo = "timothy-barry/glmeiv", upgrade = "never")
+
 library(ondisc)
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)
@@ -72,9 +75,9 @@ for (i in seq(1L, n_pairs)) {
                                                   g_perturbation_guess_range = g_perturbation_guess_range)
   s <- glmeiv::run_inference_on_em_fit(fit)
   s_long <- glmeiv::wrangle_glmeiv_result(s, 0, fit, TRUE, 2, 1)
-  s_long <- s_long %>% dplyr::mutate(gene_id = gene, gRNA_id = gRNA)
+  s_long <- dplyr::mutate(s_long, gene_id = gene, gRNA_id = gRNA)
   out_l[[i]] <- s_long
 }
 
-out <- do.call(rbind, out_l) %>% dplyr::mutate_at(c("parameter", "target", "gene_id", "gRNA_id"), factor)
+out <- dplyr::mutate_at(do.call(rbind, out_l), c("parameter", "target", "gene_id", "gRNA_id"), factor)
 saveRDS(object = out, file = "raw_result.rds")

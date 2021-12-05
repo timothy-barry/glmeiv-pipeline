@@ -3,6 +3,10 @@
 ########################################
 # 1. Load packages and command-line args
 ########################################
+if (!("devtools" %in% rownames(installed.packages()))) install.packages("devtools", repos = "https://cloud.r-project.org")
+if (!("ondisc" %in% rownames(installed.packages()))) devtools::install_github(repo = "timothy-barry/ondisc", upgrade = "never")
+if (!("glmeiv" %in% rownames(installed.packages()))) devtools::install_github(repo = "timothy-barry/glmeiv", upgrade = "never")
+
 library(ondisc)
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)

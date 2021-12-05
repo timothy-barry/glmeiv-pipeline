@@ -3,7 +3,7 @@
 #######################
 # 1. Set fps, load data
 #######################
-library(magrittr)
+if (!("dplyr" %in% rownames(installed.packages()))) install.packages("dplyr", repos = "https://cloud.r-project.org")
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)
 result_file_name <- args[1L]
@@ -18,8 +18,7 @@ combined_result <- do.call(rbind, lapply(raw_result_fps, function(fp) readRDS(fp
 ########################################
 if (ncol(pairs_df) >= 3) {
   combined_result <- dplyr::mutate(combined_result, pair_id = factor(paste0(gene_id, ":", gRNA_id)))
-  pairs_df <- dplyr::mutate(pairs_df, pair_id = factor(paste0(gene_id, ":", gRNA_id))) %>%
-    dplyr::mutate(gene_id = NULL, gRNA_id = NULL)
+  pairs_df <- dplyr::mutate(pairs_df, pair_id = factor(paste0(gene_id, ":", gRNA_id)), gene_id = NULL, gRNA_id = NULL)
   out <- dplyr::left_join(x = combined_result, y = pairs_df, by = "pair_id")
 } else {
   out <- combined_result

@@ -166,7 +166,7 @@ all_pairs_labelled_ordered = all_pairs_labelled_ch.map{[my_spread_str(it, 0), my
 *************************/
 process run_gene_gRNA_analysis {
   echo true
-  errorStrategy  { task.attempt <= 3  ? 'retry' : 'ignore' }
+  // errorStrategy  { task.attempt <= 3  ? 'retry' : 'ignore' }
   time { 2.m * params.pair_pod_size * task.attempt  }
 
   output:

@@ -11,8 +11,11 @@ g_perturbation_guess_range <- log(c(3, 100))
 ########################################
 # 1. Load packages and command-line args
 ########################################
-print(.libPaths()[1])
-library("ondisc", lib.loc = .libPaths()[1])
+if ("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0" %in% .libPaths()) {
+  library("ondisc", lib.loc = "/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0")
+} else {
+  library(ondisc)
+}
 
 args <- commandArgs(trailingOnly = TRUE)
 n_args <- length(args)

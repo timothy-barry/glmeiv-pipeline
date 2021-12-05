@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 
+if (!("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0" %in% .libPaths())) .libPaths("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0")
 #######################
 # 1. Set fps, load data
 #######################

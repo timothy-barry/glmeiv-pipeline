@@ -24,7 +24,9 @@ process obtain_gene_id {
   path pairs_fp from params.pairs
 
   """
-  Rscript -e 'pairs <- readRDS("$pairs_fp");
+  Rscript -e '
+  if (!("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0" %in% .libPaths())) .libPaths("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0");
+  pairs <- readRDS("$pairs_fp");
   gene_names <- unique(as.character(pairs[["gene_id"]]));
   cat(paste0(gene_names, collapse = "\n"))'
   """
@@ -77,7 +79,9 @@ process obtain_gRNA_id {
   path pairs_fp from params.pairs
 
   """
-  Rscript -e 'pairs <- readRDS("$pairs_fp");
+  Rscript -e '
+  if (!("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0" %in% .libPaths())) .libPaths("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0");
+  pairs <- readRDS("$pairs_fp");
   gRNA_names <- unique(as.character(pairs[["gRNA_id"]]));
   cat(paste0(gRNA_names, collapse = "\n"))'
   """
@@ -130,7 +134,9 @@ process obtain_pair_id {
   path pairs_fp from params.pairs
 
   """
-  Rscript -e 'pairs <- readRDS("$pairs_fp");
+  Rscript -e '
+  if (!("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0" %in% .libPaths())) .libPaths("/jet/home/timbar/R/x86_64-redhat-linux-gnu-library/4.0");
+  pairs <- readRDS("$pairs_fp");
   pairs <- dplyr::arrange(pairs, gene_id);
   gene_names <- as.character(pairs[["gene_id"]]);
   gRNA_names <- as.character(pairs[["gRNA_id"]]);
